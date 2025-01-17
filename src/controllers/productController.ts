@@ -1,23 +1,58 @@
-import { Request, Response } from 'express';
-import Product from '../models/Product';
+// src/controllers/productController.ts
+import { Request, Response, NextFunction } from "express";
+import ProductModel from "../models/Product";
 
-export const createProduct = async (req: Request, res: Response) => {
-  const { name, price, description, image } = req.body;
+// Upload a product
+export const uploadProduct = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const product = new Product({ name, price, description, image });
+    const { name, description, price, imageUrl, category } = req.body;
+
+    const product = new ProductModel({
+      name,
+      description,
+      price,
+      imageUrl,
+      category,
+    });
+
     await product.save();
-    
-    res.status(201).json({ message: 'Product created successfully', product });
+    return res.status(201).json({ product });
   } catch (error) {
-    res.status(500).json({ message: 'Error creating product' });
+    next(error);
   }
 };
 
-export const getProducts = async (req: Request, res: Response) => {
+// Get all products
+export const getAllProducts = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const products = await Product.find();
-    res.status(200).json(products);
+    const products = await ProductModel.find();
+    return res.status(200).json({ products });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching products' });
+    next(error);
+  }
+};
+
+// Get a single product by ID
+export const getProductById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const product = await ProductModel.findById(req.params.productId);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    return res.status(200).json({ product });
+  } catch (error) {
+    next(error);
   }
 };

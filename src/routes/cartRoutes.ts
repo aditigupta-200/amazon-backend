@@ -1,17 +1,16 @@
-// // Import necessary modules
-// import express from 'express';
-// import { protect } from '../controllers/authController';
-// import { addToCart, getCartItems, removeFromCart } from '../controllers/cartController';
+import express from 'express';
+import { getCartItems, addToCart } from '../controllers/cartController';
 
-// const router = express.Router();
+const router = express.Router();
 
-// // Route to add an item to the cart
-// router.post('/', protect, addToCart);
+// Route to get cart items
+router.get('/cart', async (req, res, next) => {
+    await getCartItems(req, res, next);
+});
 
-// // Route to get cart items
-// router.get('/', protect, getCartItems);
+// Route to add items to the cart
+router.post('/add-to-cart', async (req, res) => {
+    await addToCart(req, res);
+});
 
-// // Route to remove an item from the cart
-// router.delete('/:itemId', protect, removeFromCart);
-
-// export default router;
+export default router;
