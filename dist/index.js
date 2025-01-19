@@ -12,10 +12,13 @@ const cartRoutes = require('./routes/cartRoutes');
 dotenv_1.default.config();
 (0, db_1.default)();
 const app = (0, express_1.default)();
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({
+    origin: process.env.FRONTEND_URL, // Allow frontend's origin
+    credentials: true, // Allow cookies if needed
+}));
 app.use(express_1.default.json());
 // Routes
 app.use('/api/auth', authRoutes_1.default);
 app.use('/api/cart', cartRoutes);
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

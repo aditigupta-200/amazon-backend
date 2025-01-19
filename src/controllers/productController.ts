@@ -1,58 +1,30 @@
-// src/controllers/productController.ts
-import { Request, Response, NextFunction } from "express";
-import ProductModel from "../models/Product";
+// controllers/productController.ts
+import { Request, Response } from 'express';
+import Product from '../models/Product';
 
-// Upload a product
-export const uploadProduct = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const getProducts = async (req: Request, res: Response) => {
   try {
-    const { name, description, price, imageUrl, category } = req.body;
-
-    const product = new ProductModel({
-      name,
-      description,
-      price,
-      imageUrl,
-      category,
-    });
-
-    await product.save();
-    return res.status(201).json({ product });
+    const products = await Product.find({});
+    res.json(products);
   } catch (error) {
-    next(error);
+    res.status(500).json({ message: 'Server Error' });
   }
 };
 
-// Get all products
-export const getAllProducts = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const getFeaturedProducts = async (req: Request, res: Response) => {
   try {
-    const products = await ProductModel.find();
-    return res.status(200).json({ products });
+    const products = await Product.find({ featured: true }).limit(3);
+    res.json(products);
   } catch (error) {
-    next(error);
+    res.status(500).json({ message: 'Server Error' });
   }
 };
 
-// Get a single product by ID
-export const getProductById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const getBestSellers = async (req: Request, res: Response) => {
   try {
-    const product = await ProductModel.findById(req.params.productId);
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
-    }
-    return res.status(200).json({ product });
+    const products = await Product.find({ bestSeller: true }).limit(3);
+    res.json(products);
   } catch (error) {
-    next(error);
+    res.status(500).json({ message: 'Server Error' });
   }
 };

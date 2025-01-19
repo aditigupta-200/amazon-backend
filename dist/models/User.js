@@ -38,6 +38,14 @@ const userSchema = new mongoose_1.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    cart: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: 'Product' }],
-}, { timestamps: true });
-exports.default = mongoose_1.default.model('User', userSchema);
+    cart: [
+        {
+            product: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'Product' },
+            quantity: { type: Number, required: true, default: 1 },
+        },
+    ],
+}, {
+    timestamps: true,
+});
+const User = mongoose_1.default.model('User', userSchema);
+exports.default = User;

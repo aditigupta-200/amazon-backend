@@ -3,10 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.protect = exports.loginUser = exports.registerUser = void 0;
+exports.loginUser = exports.registerUser = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const User_1 = __importDefault(require("../models/User"));
+const User_1 = __importDefault(require("../models/User")); // Import IUser type from the User model
 const generateToken = (id) => jsonwebtoken_1.default.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
 const registerUser = async (req, res) => {
     const { name, email, password } = req.body;
@@ -18,10 +18,10 @@ const registerUser = async (req, res) => {
         const user = await User_1.default.create({ name, email, password: hashedPassword });
         if (user) {
             res.status(201).json({
-                _id: user._id,
+                _id: user._id, // Explicitly cast user to IUser
                 name: user.name,
                 email: user.email,
-                token: generateToken(user._id.toString()), // Convert _id to string
+                token: generateToken(user._id.toString()), // Ensure _id is converted to a string
             });
         }
         else {
@@ -29,7 +29,6 @@ const registerUser = async (req, res) => {
         }
     }
     catch (error) {
-        console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
 };
@@ -40,10 +39,10 @@ const loginUser = async (req, res) => {
         const user = await User_1.default.findOne({ email });
         if (user && (await bcryptjs_1.default.compare(password, user.password))) {
             res.json({
-                _id: user._id,
+                _id: user._id, // Explicitly cast user to IUser
                 name: user.name,
                 email: user.email,
-                token: generateToken(user._id.toString()), // Convert _id to string
+                token: generateToken(user._id.toString()), // Ensure _id is converted to a string
             });
         }
         else {
@@ -51,24 +50,7 @@ const loginUser = async (req, res) => {
         }
     }
     catch (error) {
-        console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
 };
 exports.loginUser = loginUser;
-const protect = async (req, res, next) => {
-    try {
-        const token = req.headers.authorization?.split(' ')[1];
-        if (!token) {
-            res.status(401).json({ message: 'Not authorized, no token' });
-            return;
-        }
-        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
-        req.user = decoded; // Attach user data to request (optional, for protected routes)
-        next();
-    }
-    catch (error) {
-        res.status(401).json({ message: 'Not authorized' });
-    }
-};
-exports.protect = protect;
