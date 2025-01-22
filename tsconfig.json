@@ -120,9 +120,13 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "../",
+     "baseUrl": "./",
+      "paths": {
+      "@shared/*": ["../shared/*"]
+    },
     "typeRoots": ["./node_modules/@types", "./types"]
   },
-  "include": ["src/**/*.ts", "src/types/**/*.d.ts"],
+  "include": ["src/**/*.ts", "src/types/**/*.d.ts",  "../shared/**/*" ],
   "exclude": ["node_modules"]
 }
